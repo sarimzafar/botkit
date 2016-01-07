@@ -69,6 +69,22 @@ if (!process.env.token) {
     process.exit(1);
 }
 
+var SlackClient = require('slack-client');
+var slackClient = new SlackClient("xoxb-17811049120-D34fezJ530r6c7OmWVAUELJh");
+
+
+
+var cleverbot = require("cleverbot.io"),  
+cleverbot = new cleverbot('uWVGQBTz7aLapzhx', 'MZKYs01DvgarZKUAPzUMSebDPPlOvgFl');  
+cleverbot.setNick("balzac");  
+cleverbot.create(function (err, session) {  
+    if (err) {
+        console.log('clever balzac create fail.');
+    } else {
+        console.log('clever balzac create success.');
+    }
+});
+
 var Botkit = require('./lib/Botkit.js');
 var os = require('os');
 
@@ -80,8 +96,25 @@ var bot = controller.spawn({
     token: process.env.token
 }).startRTM();
 
+controller.hears('','direct_message,direct_mention,mention,message_received',function(bot,message){
+	var msg = message.text;
+	//console.log(msg);
+	cleverbot.ask(msg,function(err,response)
+	{
+		slackClient._send({ type: "typing", channel: message.channel });
+		if(!err)
+		{
+			bot.reply(message,response);
+		}
+		else
+		{
+			console.log('balzac error:' +err);
+		}
+	});
+})
 
-controller.hears(['hello','hi'],'direct_message,direct_mention,mention',function(bot, message) {
+
+/*controller.hears(['hello','hi'],'direct_message,direct_mention,mention',function(bot, message) {
 
     bot.api.reactions.add({
         timestamp: message.ts,
@@ -183,4 +216,4 @@ function formatUptime(uptime) {
 
     uptime = uptime + ' ' + unit;
     return uptime;
-}
+}*/
