@@ -69,8 +69,8 @@ if (!process.env.token) {
     process.exit(1);
 }
 
-var SlackClient = require('slack-client');
-var slackClient = new SlackClient("xoxb-17811049120-D34fezJ530r6c7OmWVAUELJh");
+//var SlackClient = require('slack-client');
+//var slackClient = new SlackClient("xoxb-17811049120-D34fezJ530r6c7OmWVAUELJh");
 
 
 
@@ -101,7 +101,7 @@ controller.hears('','direct_message,direct_mention,mention,message_received',fun
 	//console.log(msg);
 	cleverbot.ask(msg,function(err,response)
 	{
-		slackClient._send({ type: "typing", channel: message.channel });
+		//slackClient._send({ type: "typing", channel: message.channel });
 		if(!err)
 		{
 			bot.reply(message,response);
