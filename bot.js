@@ -69,22 +69,6 @@ if (!process.env.token) {
     process.exit(1);
 }
 
-//var SlackClient = require('slack-client');
-//var slackClient = new SlackClient("xoxb-17811049120-D34fezJ530r6c7OmWVAUELJh");
-
-
-
-var cleverbot = require("cleverbot.io"),  
-cleverbot = new cleverbot('uWVGQBTz7aLapzhx', 'MZKYs01DvgarZKUAPzUMSebDPPlOvgFl');  
-cleverbot.setNick("balzac");  
-cleverbot.create(function (err, session) {  
-    if (err) {
-        console.log('clever balzac create fail.');
-    } else {
-        console.log('clever balzac create success.');
-    }
-});
-
 var Botkit = require('./lib/Botkit.js');
 var os = require('os');
 
@@ -96,30 +80,13 @@ var bot = controller.spawn({
     token: process.env.token
 }).startRTM();
 
-controller.hears('','direct_message,direct_mention,mention,message_received',function(bot,message){
-	var msg = message.text;
-	//console.log(msg);
-	cleverbot.ask(msg,function(err,response)
-	{
-		//slackClient._send({ type: "typing", channel: message.channel });
-		if(!err)
-		{
-			bot.reply(message,response);
-		}
-		else
-		{
-			console.log('balzac error:' +err);
-		}
-	});
-})
 
-
-/*controller.hears(['hello','hi'],'direct_message,direct_mention,mention',function(bot, message) {
+controller.hears(['hello','hi'],'direct_message,direct_mention,mention,ambient,message_received',function(bot, message) {
 
     bot.api.reactions.add({
         timestamp: message.ts,
         channel: message.channel,
-        name: 'robot_face',
+        name: 'balzac',
     },function(err, res) {
         if (err) {
             bot.botkit.log('Failed to add emoji reaction :(',err);
@@ -134,6 +101,29 @@ controller.hears('','direct_message,direct_mention,mention,message_received',fun
             bot.reply(message,'Hello.');
         }
     });
+});
+
+controller.hears(['Start'],'ambient,message_received,direct_message,direct_mention,mention', function(bot,message){
+
+    bot.api.reactions.add({
+            timestamp: message.ts,
+            channel: message.channel,
+            name: 'balzac',
+        },function(err, res) {
+            if (err) {
+                bot.botkit.log('Failed to start the survey :: Contact HelpDesk :(',err);
+            }
+        });
+
+
+        controller.storage.users.get(message.user,function(err, user) {
+            if (user && user.name) {
+                bot.reply(message,'Hello ' + user.name + '!!');
+                bot.reply(message,'We are now going to start the survey');
+            } else {
+                bot.reply(message,'Hi there, We are now going to start the survey');
+            }
+        });
 });
 
 controller.hears(['call me (.*)'],'direct_message,direct_mention,mention',function(bot, message) {
@@ -196,7 +186,7 @@ controller.hears(['uptime','identify yourself','who are you','what is your name'
     var hostname = os.hostname();
     var uptime = formatUptime(process.uptime());
 
-    bot.reply(message,':robot_face: I am a bot named <@' + bot.identity.name + '>. I have been running for ' + uptime + ' on ' + hostname + '.');
+    bot.reply(message,':balzac: I am a bot named <@' + bot.identity.name + '>. I have been running for ' + uptime + ' on ' + hostname + '.');
 
 });
 
@@ -216,4 +206,4 @@ function formatUptime(uptime) {
 
     uptime = uptime + ' ' + unit;
     return uptime;
-}*/
+}
